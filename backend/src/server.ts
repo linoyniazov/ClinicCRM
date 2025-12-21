@@ -2,23 +2,36 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import express, { Express } from "express";
+import pool from "./db";
 
 const initApp = (): Promise<Express> => {
-  return new Promise((resolve) => {
-    const app = express();
+  return new Promise(async (resolve, reject) => {
+    try {
+      const app = express();
 
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
+      app.use(express.json());
+      app.use(express.urlencoded({ extended: true }));
 
-    app.get("/", (_req, res) => {
+      await pool.query("SELECT 1");
+      console.log("PostgreSQL connected successfully");
+
+        app.get("/", (_req, res) => {
       res.send("Server is up ✅");
     });
 
-    app.get("/health", (_req, res) => {
-      res.status(200).send("OK");
-    });
+      app.get("/health", async (_req, res) => {
+        try {
+          await pool.query("SELECT 1");
+          res.status(200).send("OK");
+        } catch {
+          res.status(500).send("DB not ready");
+        }
+      });
 
-    resolve(app);
+      resolve(app);
+    } catch (err) {
+      reject(err);
+    }
   });
 };
 
