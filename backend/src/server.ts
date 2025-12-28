@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-
+import cors from "cors";
 import express, { Express } from "express";
 import pool from "./db";
 import patientRoutes from "./routes/patientRoutes";
@@ -11,7 +11,7 @@ const initApp = (): Promise<Express> => {
   return new Promise(async (resolve, reject) => {
     try {
       const app = express();
-
+      app.use(cors());
       app.use(express.json());
       app.use(express.urlencoded({ extended: true }));
 
