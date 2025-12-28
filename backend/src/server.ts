@@ -3,6 +3,7 @@ dotenv.config();
 
 import express, { Express } from "express";
 import pool from "./db";
+import patientRoutes from "./routes/patientRoutes";
 
 const initApp = (): Promise<Express> => {
   return new Promise(async (resolve, reject) => {
@@ -12,10 +13,13 @@ const initApp = (): Promise<Express> => {
       app.use(express.json());
       app.use(express.urlencoded({ extended: true }));
 
+  // API routes
+  app.use('/api/patients', patientRoutes);
+
       await pool.query("SELECT 1");
       console.log("PostgreSQL connected successfully");
 
-        app.get("/", (_req, res) => {
+  app.get("/", (_req, res) => {
       res.send("Server is up ✅");
     });
 
