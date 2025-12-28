@@ -5,6 +5,7 @@ import express, { Express } from "express";
 import pool from "./db";
 import patientRoutes from "./routes/patientRoutes";
 import serviceRoutes from "./routes/serviceRoutes";
+import appointmentsRoutes from "./routes/appointmentsRoutes";
 
 const initApp = (): Promise<Express> => {
   return new Promise(async (resolve, reject) => {
@@ -17,6 +18,7 @@ const initApp = (): Promise<Express> => {
   // API routes
   app.use('/api/patients', patientRoutes);
   app.use('/api/services', serviceRoutes);
+  app.use('/api/appointments', appointmentsRoutes);
 
       await pool.query("SELECT 1");
       console.log("PostgreSQL connected successfully");
