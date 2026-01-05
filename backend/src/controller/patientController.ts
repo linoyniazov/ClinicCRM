@@ -62,35 +62,54 @@ export async function updatePatient(req: Request, res: Response): Promise<void> 
     }
 
     const body = req.body as Partial<CreatePatientDto>;
-    // normalize & basic validation for fields being updated
-    const first_name = body.first_name?.trim();
-    const last_name = body.last_name?.trim();
-    const phone = body.phone?.trim();
-    const email = body.email?.trim()?.toLowerCase();
-    const sensitivities = body.sensitivities ?? null;
-    const medical_info = body.medical_info ?? null;
 
-    if (phone) {
+    const updates: Record<string, any> = {};
+    if (typeof body.first_name === 'string') updates.first_name = body.first_name.trim();
+    if (typeof body.last_name === 'string') updates.last_name = body.last_name.trim();
+    if (typeof body.phone === 'string') updates.phone = body.phone.trim();
+    if (typeof body.email === 'string') updates.email = body.email.trim().toLowerCase();
+    if (body.sensitivities !== undefined) updates.sensitivities = body.sensitivities;
+    if (body.medical_info !== undefined) updates.medical_info = body.medical_info;
+
+    if (Object.keys(updates).length === 0) {
+        res.status(400).json({ error: 'No fields to update' });
+        return;
+    }
+
+    if (updates.phone) {
         const phoneRegex = /^\+?\d{9,15}$/;
-        if (!phoneRegex.test(phone)) {
-            res.status(400).json({ error: 'Invalid phone format', details: { phone } });
+        if (!phoneRegex.test(updates.phone)) {
+            res.status(400).json({ error: 'Invalid phone format', details: { phone: updates.phone } });
             return;
         }
     }
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        res.status(400).json({ error: 'Invalid email format', details: { email } });
-        return;
+    if (updates.email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(updates.email)) {
+            res.status(400).json({ error: 'Invalid email format', details: { email: updates.email } });
+            return;
+        }
     }
+    const setClauses: string[] = [];
+    const values: any[] = [];
+    let idx = 1;
+
+    for (const [key, value] of Object.entries(updates)) {
+        setClauses.push(`${key} = $${idx}`);
+        values.push(value);
+        idx++;
+    }
+    values.push(idNum);
+
+    const sql = `UPDATE patients SET ${setClauses.join(', ')} WHERE id = $${idx} RETURNING *`;
+
     try {
-        const result = await pool.query(
-            'UPDATE patients SET first_name = $1, last_name = $2, phone = $3, email = $4, sensitivities = $5, medical_info = $6 WHERE id = $7 RETURNING *',
-            [first_name, last_name, phone, email, sensitivities, medical_info, idNum]
-        );
+        const result = await pool.query(sql, values);
         if (result.rows.length === 0) {
             res.status(404).json({ error: 'Patient not found' });
             return;
         }
-        res.json(result.rows[0]);
+        res.status(200).json(result.rows[0]);
     } catch (error) {
         console.error('Error updating patient:', error);
         if ((error as any)?.code === '23505') {
