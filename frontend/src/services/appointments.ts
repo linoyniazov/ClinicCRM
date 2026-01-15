@@ -1,5 +1,5 @@
-import { apiClient } from './api/client';
-import type { Appointment } from './api/types';
+import { apiClient } from './client';
+import type { Appointment } from './types';
 
 export const getAppointments = async (): Promise<Appointment[]> => {
   const response = await apiClient.get<Appointment[]>('/api/appointments');

@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { Patient } from './api/types';
+import type { Patient } from './types';
 
 export const getPatients = async (): Promise<Patient[]> => {
   const response = await apiClient.get<Patient[]>('/api/patients');
