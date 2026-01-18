@@ -10,6 +10,61 @@ async function run() {
     await pool.query('SELECT 1');
     console.log('✓ Database connection established');
 
+    // Create base tables if they don't exist
+    console.log('Creating users table...');
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(50) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        full_name VARCHAR(100),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log('✓ Created users table');
+
+    console.log('Creating patients table...');
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS patients (
+        id SERIAL PRIMARY KEY,
+        first_name VARCHAR(100) NOT NULL,
+        last_name VARCHAR(100) NOT NULL,
+        phone VARCHAR(20) UNIQUE NOT NULL,
+        email VARCHAR(255) UNIQUE,
+        sensitivities TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log('✓ Created patients table');
+
+    console.log('Creating services table...');
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS services (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        duration_minutes INTEGER NOT NULL,
+        base_price DECIMAL(10, 2)
+      );
+    `);
+    console.log('✓ Created services table');
+
+    console.log('Creating appointments table...');
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS appointments (
+        id SERIAL PRIMARY KEY,
+        patient_id INTEGER REFERENCES patients(id) ON DELETE CASCADE,
+        service_id INTEGER REFERENCES services(id),
+        appointment_date TIMESTAMP NOT NULL,
+        status VARCHAR(50) NOT NULL DEFAULT 'scheduled',
+        CONSTRAINT appointments_status_check CHECK (status IN ('scheduled','completed','canceled'))
+      );
+    `);
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_appointments_patient_id ON appointments(patient_id);');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_appointments_service_id ON appointments(service_id);');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_appointments_date ON appointments(appointment_date);');
+    console.log('✓ Created appointments table');
+
+    // Add columns to existing tables
     await pool.query(
       "ALTER TABLE patients ADD COLUMN IF NOT EXISTS medical_info JSONB DEFAULT '{}'::jsonb;"
     );
