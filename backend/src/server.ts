@@ -7,6 +7,9 @@ import patientRoutes from "./routes/patientRoutes";
 import serviceRoutes from "./routes/serviceRoutes";
 import appointmentsRoutes from "./routes/appointmentsRoutes";
 import dashboardRoutes from "./routes/dashboardRoutes";
+import authRoutes from "./routes/authRoutes";
+import { authenticateToken } from './middleware/authMiddleware';
+
 
 const initApp = (): Promise<Express> => {
   return new Promise(async (resolve, reject) => {
@@ -17,10 +20,11 @@ const initApp = (): Promise<Express> => {
       app.use(express.urlencoded({ extended: true }));
 
   // API routes
-  app.use('/api/patients', patientRoutes);
-  app.use('/api/services', serviceRoutes);
-  app.use('/api/appointments', appointmentsRoutes);
-  app.use('/api/dashboard', dashboardRoutes);
+  app.use('/api/dashboard', authenticateToken, dashboardRoutes);
+  app.use('/api/patients', authenticateToken, patientRoutes);
+  app.use('/api/appointments', authenticateToken, appointmentsRoutes);
+  app.use('/api/services', authenticateToken, serviceRoutes);
+  app.use('/api/auth', authRoutes);
 
       await pool.query("SELECT 1");
       console.log("PostgreSQL connected successfully");
