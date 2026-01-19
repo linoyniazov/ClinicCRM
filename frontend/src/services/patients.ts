@@ -1,13 +1,36 @@
 import { apiClient } from './client';
-import type { Patient } from './types';
+import type { MedicalInfo } from './types';
+
+export interface Patient {
+    id: number;
+    first_name: string;
+    last_name: string;
+    phone: string;
+    email?: string;
+    address?: string;
+    date_of_birth?: string;
+    sensitivities?: string;
+    medical_info?: MedicalInfo;
+    created_at?: string;
+}
+export interface CreatePatientDto {
+    first_name: string;
+    last_name: string;
+    phone: string;
+    email?: string;
+    sensitivities?: string;
+    medical_info?: MedicalInfo;
+    address?: string;
+    date_of_birth?: string;
+}
 
 export const getPatients = async (): Promise<Patient[]> => {
-  const response = await apiClient.get<Patient[]>('/api/patients');
-  return response.data;
+    const response = await apiClient.get<Patient[]>('/patients');
+    return response.data;
 };
 
-export const createPatient = async (patient: Omit<Patient, 'id' | 'created_at'>): Promise<Patient> => {
-  const response = await apiClient.post<Patient>('/api/patients', patient);
-  return response.data;
+export const createPatient = async (patientData: CreatePatientDto): Promise<Patient> => {
+    const response = await apiClient.post<Patient>('/patients', patientData);
+    return response.data;
 };
 

@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS patients (
     last_name VARCHAR(100) NOT NULL,
     phone VARCHAR(20) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE,
+    address TEXT,
+    date_of_birth DATE,
     sensitivities TEXT,
     skin_type VARCHAR(50), 
     medical_info JSONB DEFAULT '{}'::jsonb,
