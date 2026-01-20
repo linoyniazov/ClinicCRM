@@ -1,6 +1,4 @@
 import { apiClient } from './client';
-import type { MedicalInfo } from './types';
-
 export interface Patient {
     id: number;
     first_name: string;
@@ -10,7 +8,7 @@ export interface Patient {
     address?: string;
     date_of_birth?: string;
     sensitivities?: string;
-    medical_info?: MedicalInfo;
+    medical_info?: Record<string, any>;
     created_at?: string;
 }
 export interface CreatePatientDto {
@@ -19,7 +17,7 @@ export interface CreatePatientDto {
     phone: string;
     email?: string;
     sensitivities?: string;
-    medical_info?: MedicalInfo;
+    medical_info?: Record<string, any>;
     address?: string;
     date_of_birth?: string;
 }

@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import type { ReactElement } from 'react';
 import AppLayout from './layouts/AppLayout';
 import DashboardPage from './pages/DashboardPage';
 import PatientsPage from './pages/PatientsPage';
@@ -11,7 +10,7 @@ import AiAnalysisPage from './pages/AiAnalysisPage';
 import LoginPage from './pages/LoginPage';
 import { isAuthenticated } from './services/auth';
 
-const ProtectedRoute = ({ children }: { children: ReactElement }) => {
+const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     if (!isAuthenticated()) {
         return <Navigate to="/login" replace />;
     }
