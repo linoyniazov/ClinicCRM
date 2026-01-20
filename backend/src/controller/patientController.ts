@@ -162,3 +162,35 @@ export async function updatePatient(req: Request, res: Response): Promise<void> 
     }
 }
 
+export async function getPatientHistory(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+        const query = `
+            SELECT th.*, s.name as treatment_name 
+            FROM treatment_history th
+            LEFT JOIN appointments a ON th.appointment_id = a.id
+            LEFT JOIN services s ON a.service_id = s.id
+            WHERE th.patient_id = $1
+            ORDER BY th.treatment_date DESC
+        `;
+        const result = await pool.query(query, [id]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching patient history:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+export async function getPatientImages(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+        const result = await pool.query(
+            'SELECT * FROM patient_images WHERE patient_id = $1 ORDER BY taken_at DESC',
+            [id]
+        );
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching patient images:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
