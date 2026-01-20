@@ -8,7 +8,7 @@ export interface Patient {
     address?: string;
     date_of_birth?: string;
     sensitivities?: string;
-    medical_info?: Record<string, any>;
+    medical_info?: Record<string, unknown>;
     created_at?: string;
 }
 export interface CreatePatientDto {
@@ -17,13 +17,18 @@ export interface CreatePatientDto {
     phone: string;
     email?: string;
     sensitivities?: string;
-    medical_info?: Record<string, any>;
+    medical_info?: Record<string, unknown>;
     address?: string;
     date_of_birth?: string;
 }
 
 export const getPatients = async (): Promise<Patient[]> => {
     const response = await apiClient.get<Patient[]>('/patients');
+    return response.data;
+};
+
+export const getPatientById = async (id: string): Promise<Patient> => {
+    const response = await apiClient.get<Patient>(`/patients/${id}`);
     return response.data;
 };
 
