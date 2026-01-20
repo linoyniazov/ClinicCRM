@@ -1,7 +1,9 @@
+import type { ReactNode } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from './layouts/AppLayout';
 import DashboardPage from './pages/DashboardPage';
 import PatientsPage from './pages/PatientsPage';
+import PatientProfilePage from './pages/PatientProfilePage';
 import SchedulePage from './pages/SchedulePage';
 import BookAppointmentPage from './pages/BookAppointmentPage';
 import InventoryPage from './pages/InventoryPage';
@@ -10,7 +12,7 @@ import AiAnalysisPage from './pages/AiAnalysisPage';
 import LoginPage from './pages/LoginPage';
 import { isAuthenticated } from './services/auth';
 
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+const ProtectedRoute = ({ children }: { children: ReactNode }) => {
     if (!isAuthenticated()) {
         return <Navigate to="/login" replace />;
     }
@@ -37,6 +39,7 @@ function App() {
                     
                     <Route path="dashboard" element={<DashboardPage />} />
                     <Route path="patients" element={<PatientsPage />} />
+                    <Route path="patients/:id" element={<PatientProfilePage />} />
                     <Route path="schedule" element={<SchedulePage />} />
                     <Route path="book" element={<BookAppointmentPage />} />
                     <Route path="inventory" element={<InventoryPage />} />
