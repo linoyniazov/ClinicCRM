@@ -1,9 +1,9 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 import pool from '../src/db';
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const migrate = async () => {
     try {
