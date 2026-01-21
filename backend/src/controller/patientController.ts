@@ -194,3 +194,53 @@ export async function getPatientImages(req: Request, res: Response): Promise<voi
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+export async function uploadPatientImage(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    const idNum = parseInt(id, 10);
+
+    if (!Number.isInteger(idNum) || idNum <= 0) {
+        res.status(400).json({ error: 'Invalid patient id' });
+        return;
+    }
+
+    if (!req.file) {
+        res.status(400).json({ error: 'No file uploaded' });
+        return;
+    }
+
+    const { image_type, notes } = req.body;
+    
+    if (!image_type || !['before', 'after', 'progress'].includes(image_type)) {
+        res.status(400).json({ error: 'Invalid image_type. Must be: before, after, or progress' });
+        return;
+    }
+
+    try {
+        const patientCheck = await pool.query('SELECT id FROM patients WHERE id = $1', [idNum]);
+        if (patientCheck.rows.length === 0) {
+            res.status(404).json({ error: 'Patient not found' });
+            return;
+        }
+
+        const imageUrl = `/uploads/${req.file.filename}`;
+
+        const query = `
+            INSERT INTO patient_images (patient_id, image_url, image_type, notes)
+            VALUES ($1, $2, $3, $4)
+            RETURNING *
+        `;
+        
+        const result = await pool.query(query, [
+            idNum,
+            imageUrl,
+            image_type,
+            notes || null
+        ]);
+
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error uploading patient image:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}

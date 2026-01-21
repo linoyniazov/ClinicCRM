@@ -18,6 +18,10 @@ apiClient.interceptors.request.use(
       return config;
     }
     
+    if (config.data instanceof FormData && config.headers) {
+      delete config.headers['Content-Type'];
+    }
+    
     const token = localStorage.getItem('token');
     console.log('Interceptor: Token from storage:', token ? 'Exists' : 'Missing');
     
