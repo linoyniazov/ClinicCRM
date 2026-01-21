@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
 import express, { Express } from "express";
+import path from "path";
 import pool from "./db";
 import patientRoutes from "./routes/patientRoutes";
 import serviceRoutes from "./routes/serviceRoutes";
@@ -18,8 +19,9 @@ const initApp = (): Promise<Express> => {
       app.use(cors());
       app.use(express.json());
       app.use(express.urlencoded({ extended: true }));
+      
+      app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-  // API routes
   app.use('/api/dashboard', authenticateToken, dashboardRoutes);
   app.use('/api/patients', authenticateToken, patientRoutes);
   app.use('/api/appointments', authenticateToken, appointmentsRoutes);

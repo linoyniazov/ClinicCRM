@@ -67,4 +67,30 @@ export const updatePatient = async (id: number, patientData: Partial<CreatePatie
     return response.data;
 };
 
+export const uploadPatientImage = async (
+    patientId: number, 
+    file: File, 
+    imageType: 'before' | 'after' | 'progress',
+    notes?: string
+): Promise<PatientImage> => {
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('image_type', imageType);
+    if (notes) {
+        formData.append('notes', notes);
+    }
+
+    const token = localStorage.getItem('token');
+    const response = await apiClient.post<PatientImage>(
+        `/patients/${patientId}/images`,
+        formData,
+        {
+            headers: {
+                ...(token && { Authorization: `Bearer ${token}` })
+            }
+        }
+    );
+    return response.data;
+};
+
 
