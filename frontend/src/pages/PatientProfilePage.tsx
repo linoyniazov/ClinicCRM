@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getPatientById } from '../services/patients';
 import type { Patient } from '../services/patients';
 import { User, Calendar, Phone, Mail, MapPin, Activity, Clock, ArrowLeft, Image as ImageIcon } from 'lucide-react';
+import EditPatientModal from '../components/EditPatientModal';
 
 type TabType = 'overview' | 'history' | 'gallery';
 
@@ -14,6 +15,7 @@ const PatientProfilePage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<TabType>('overview');
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     useEffect(() => {
         const loadPatient = async () => {
@@ -31,6 +33,11 @@ const PatientProfilePage: React.FC = () => {
         };
         loadPatient();
     }, [id]);
+
+    const handlePatientUpdate = (updatedPatient: Patient) => {
+        setPatient(updatedPatient);
+        setIsEditModalOpen(false);
+    };
 
     if (loading) return <div className="p-8 text-center text-gray-500">Loading profile...</div>;
     if (error || !patient) return <div className="p-8 text-center text-red-500">{error || 'Patient not found'}</div>;
@@ -121,7 +128,10 @@ const PatientProfilePage: React.FC = () => {
                     <p className="text-sm text-gray-500">Member since {new Date(patient.created_at || '').toLocaleDateString()}</p>
                 </div>
                 <div className="ml-auto flex gap-3">
-                    <button className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium">
+                    <button 
+                        onClick={() => setIsEditModalOpen(true)}
+                        className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+                    >
                         Edit Profile
                     </button>
                     <button className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-medium shadow-sm">
@@ -154,6 +164,15 @@ const PatientProfilePage: React.FC = () => {
             <div className="min-h-[400px]">
                 {renderTabContent()}
             </div>
+
+            {patient && (
+                <EditPatientModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    onSuccess={handlePatientUpdate}
+                    patient={patient}
+                />
+            )}
         </div>
     );
 };

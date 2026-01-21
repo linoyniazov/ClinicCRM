@@ -62,3 +62,9 @@ export const getPatientImages = async (id: string): Promise<PatientImage[]> => {
     return response.data;
 };
 
+export const updatePatient = async (id: number, patientData: Partial<CreatePatientDto>): Promise<Patient> => {
+    const response = await apiClient.patch<Patient>(`/patients/${id}`, patientData);
+    return response.data;
+};
+
+
