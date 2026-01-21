@@ -9,7 +9,6 @@ const PatientsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,6 +32,8 @@ const PatientsPage: React.FC = () => {
   const handlePatientAdded = () => {
     fetchPatients();
   };
+
+
 
   if (loading && patients.length === 0) {
     return (
@@ -123,7 +124,7 @@ const PatientsPage: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
                         onClick={() => navigate(`/patients/${patient.id}`)}
-                        className="text-teal-600 hover:text-teal-900 font-semibold mr-3"
+                        className="text-teal-600 hover:text-teal-900 font-semibold"
                       >
                         View Profile
                       </button>
