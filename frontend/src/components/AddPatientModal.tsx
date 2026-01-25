@@ -5,7 +5,7 @@ import type { CreatePatientDto } from '../services/patients';
 interface AddPatientModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (patientId?: number) => void;
 }
 
 const AddPatientModal: React.FC<AddPatientModalProps> = ({
@@ -42,8 +42,8 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
     setLoading(true);
 
     try {
-      await createPatient(formData);
-      onSuccess();
+      const newPatient = await createPatient(formData);
+      onSuccess(newPatient.id);
       onClose();
       setFormData({
         first_name: '',
@@ -68,7 +68,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm overflow-y-auto">
+    <div className="fixed inset-0 z-[60] flex items-start sm:items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm overflow-y-auto">
       {/* Modal Container */}
       <div
         className="
