@@ -5,7 +5,7 @@ import DashboardPage from './pages/DashboardPage';
 import PatientsPage from './pages/PatientsPage';
 import PatientProfilePage from './pages/PatientProfilePage';
 import SchedulePage from './pages/SchedulePage';
-import BookAppointmentPage from './pages/BookAppointmentPage';
+import ServicesPage from './pages/ServicesPage';
 import InventoryPage from './pages/InventoryPage';
 import FinancePage from './pages/FinancePage';
 import AiAnalysisPage from './pages/AiAnalysisPage';
@@ -41,7 +41,7 @@ function App() {
                     <Route path="patients" element={<PatientsPage />} />
                     <Route path="patients/:id" element={<PatientProfilePage />} />
                     <Route path="schedule" element={<SchedulePage />} />
-                    <Route path="book" element={<BookAppointmentPage />} />
+                    <Route path="services" element={<ServicesPage />} />
                     <Route path="inventory" element={<InventoryPage />} />
                     <Route path="finance" element={<FinancePage />} />
                     <Route path="ai-analysis" element={<AiAnalysisPage />} />

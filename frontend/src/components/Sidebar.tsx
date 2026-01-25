@@ -19,10 +19,10 @@ export default function Sidebar() {
         <NavLink to="/dashboard" style={linkStyle}>Dashboard</NavLink>
         <NavLink to="/schedule" style={linkStyle}>Schedule</NavLink>
         <NavLink to="/patients" style={linkStyle}>Patients</NavLink>
+        <NavLink to="/services" style={linkStyle}>Services</NavLink>
         <NavLink to="/ai-analysis" style={linkStyle}>✨ AI Analysis</NavLink>
         <NavLink to="/finance" style={linkStyle}>💳 Finance</NavLink>
         <NavLink to="/inventory" style={linkStyle}>Inventory</NavLink>
-        <NavLink to="/book" style={linkStyle}>Book Appointment</NavLink>
       </nav>
     </aside>
   );

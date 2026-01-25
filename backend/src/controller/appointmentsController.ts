@@ -4,11 +4,12 @@ import pool from '../db';
 interface CreateAppointmentDto {
     patient_id: number;
     service_id: number;
-    appointment_date: string; 
+    appointment_date: string;
+    treatment_notes?: string;
 }
 
 export async function createAppointment(req: Request, res: Response): Promise<void> {
-    const { patient_id, service_id, appointment_date } = req.body as CreateAppointmentDto;
+    const { patient_id, service_id, appointment_date, treatment_notes } = req.body as CreateAppointmentDto;
 
     try {
         if (!patient_id || !service_id || !appointment_date) {
@@ -17,10 +18,10 @@ export async function createAppointment(req: Request, res: Response): Promise<vo
         }
 
         const result = await pool.query(
-            `INSERT INTO appointments (patient_id, service_id, appointment_date) 
-             VALUES ($1, $2, $3) 
+            `INSERT INTO appointments (patient_id, service_id, appointment_date, treatment_notes) 
+             VALUES ($1, $2, $3, $4) 
              RETURNING *`,
-            [patient_id, service_id, appointment_date]
+            [patient_id, service_id, appointment_date, treatment_notes || null]
         );
         
         res.status(201).json(result.rows[0]);
@@ -37,9 +38,13 @@ export async function getAppointments(req: Request, res: Response): Promise<void
                 a.id, 
                 a.appointment_date, 
                 a.status,
+                a.treatment_notes,
+                a.patient_id,
+                a.service_id,
                 p.first_name, 
                 p.last_name, 
                 p.phone,
+                CONCAT(p.first_name, ' ', p.last_name) as patient_name,
                 s.name as service_name, 
                 s.duration_minutes, 
                 s.base_price
@@ -75,6 +80,27 @@ export async function updateAppointmentStatus(req: Request, res: Response): Prom
         res.json(result.rows[0]);
     } catch (error) {
         console.error('Error updating status:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+export async function deleteAppointment(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+
+    try {
+        const result = await pool.query(
+            'DELETE FROM appointments WHERE id = $1 RETURNING *',
+            [id]
+        );
+        
+        if (result.rowCount === 0) {
+            res.status(404).json({ error: 'Appointment not found' });
+            return;
+        }
+
+        res.status(200).json({ message: 'Appointment deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting appointment:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
